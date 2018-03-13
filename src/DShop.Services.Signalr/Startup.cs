@@ -4,6 +4,8 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
+using DShop.Messages.Events.Operations;
+using DShop.Services.Signalr.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +26,7 @@ namespace DShop.Services.Signalr
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddDefaultJsonOptions();
+            services.AddSignalR();
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
@@ -41,9 +44,14 @@ namespace DShop.Services.Signalr
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseMvc();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<DShopHub>("/dshop");
+            });
             app.UseErrorHandler();
-            app.UseRabbitMq();
+            app.UseMvc();
+            app.UseRabbitMq()
+                .SubscribeEvent<OperationUpdated>();;
             applicationLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
