@@ -2,6 +2,7 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DShop.Common.Authentication;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
 using DShop.Messages.Events.Operations;
@@ -27,6 +28,15 @@ namespace DShop.Services.Signalr
         {
             services.AddMvc().AddDefaultJsonOptions();
             services.AddSignalR();
+            services.AddJwt();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", cors => 
+                        cors.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials());
+            });
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
@@ -44,14 +54,15 @@ namespace DShop.Services.Signalr
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseErrorHandler();
+            app.UseCors("CorsPolicy");
             app.UseSignalR(routes =>
             {
                 routes.MapHub<DShopHub>("/dshop");
             });
-            app.UseErrorHandler();
             app.UseMvc();
             app.UseRabbitMq()
-                .SubscribeEvent<OperationUpdated>();;
+                .SubscribeEvent<OperationUpdated>();
             applicationLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
