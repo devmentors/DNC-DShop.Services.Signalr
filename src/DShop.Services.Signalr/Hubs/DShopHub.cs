@@ -34,7 +34,7 @@ namespace DShop.Services.Signalr.Hubs
                     return;
                 }
                 var group = Guid.Parse(payload.Subject).ToUserGroup();
-                await Groups.AddAsync(Context.ConnectionId, group);
+                await Groups.AddToGroupAsync(Context.ConnectionId, group);
                 await ConnectAsync();
             }
             catch
