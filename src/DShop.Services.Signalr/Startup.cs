@@ -3,7 +3,9 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using DDShop.Services.Signalr.Messages.Events;
+using DShop.Common.AppMetrics;
 using DShop.Common.Authentication;
+using DShop.Common.Dispatchers;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
 using DShop.Services.Signalr.Hubs;
@@ -26,9 +28,10 @@ namespace DShop.Services.Signalr
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddDefaultJsonOptions();
-            services.AddSignalR();
+            services.AddCustomMvc();
+            services.AddAppMetrics();
             services.AddJwt();
+            services.AddSignalR();
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", cors => 
@@ -54,7 +57,9 @@ namespace DShop.Services.Signalr
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAppMetrics(applicationLifetime);
             app.UseErrorHandler();
+            app.UseAuthentication();
             app.UseCors("CorsPolicy");
             app.UseSignalR(routes =>
             {
