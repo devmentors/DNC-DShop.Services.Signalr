@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using DShop.Messages.Events.Operations;
+using DDShop.Services.Signalr.Messages.Events;
 using DShop.Services.Signalr.Hubs;
 using Microsoft.AspNetCore.SignalR;
 

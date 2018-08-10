@@ -2,10 +2,10 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DDShop.Services.Signalr.Messages.Events;
 using DShop.Common.Authentication;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
-using DShop.Messages.Events.Operations;
 using DShop.Services.Signalr.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

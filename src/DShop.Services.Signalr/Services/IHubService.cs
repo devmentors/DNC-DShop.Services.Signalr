@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using DShop.Messages.Events.Operations;
+using DDShop.Services.Signalr.Messages.Events;
 
 namespace DShop.Services.Signalr.Services
 {

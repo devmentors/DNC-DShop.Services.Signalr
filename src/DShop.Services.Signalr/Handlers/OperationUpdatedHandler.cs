@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using DDShop.Services.Signalr.Messages.Events;
 using DShop.Common.Handlers;
 using DShop.Common.RabbitMq;
-using DShop.Messages.Events.Operations;
 using DShop.Services.Signalr.Services;
 
 namespace DShop.Services.Signalr.Handlers
