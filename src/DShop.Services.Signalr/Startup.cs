@@ -2,8 +2,10 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Consul;
 using DDShop.Services.Signalr.Messages.Events;
 using DShop.Common.Authentication;
+using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
@@ -28,6 +30,7 @@ namespace DShop.Services.Signalr
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCustomMvc();
+            services.AddConsul();
             services.AddJwt();
             services.AddSignalR();
             services.AddCors(options =>
@@ -49,7 +52,7 @@ namespace DShop.Services.Signalr
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IApplicationLifetime applicationLifetime)
+            IApplicationLifetime applicationLifetime, IConsulClient client)
         {
             if (env.IsDevelopment() || env.EnvironmentName == "local")
             {
@@ -58,6 +61,7 @@ namespace DShop.Services.Signalr
             app.UseErrorHandler();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
+            app.UseServiceId();
             app.UseSignalR(routes =>
             {
                 routes.MapHub<DShopHub>("/dshop");
@@ -65,7 +69,12 @@ namespace DShop.Services.Signalr
             app.UseMvc();
             app.UseRabbitMq()
                 .SubscribeEvent<OperationUpdated>();
-            applicationLifetime.ApplicationStopped.Register(() => Container.Dispose());
+            var consulServiceId = app.UseConsul();
+            applicationLifetime.ApplicationStopped.Register(() => 
+            { 
+                client.Agent.ServiceDeregister(consulServiceId); 
+                Container.Dispose(); 
+            });
         }
     }
 }
