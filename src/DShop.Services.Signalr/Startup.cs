@@ -9,6 +9,7 @@ using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
+using DShop.Common.Swagger;
 using DShop.Services.Signalr.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ namespace DShop.Services.Signalr
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCustomMvc();
+            services.AddSwaggerDocs();
             services.AddConsul();
             services.AddJwt();
             services.AddSignalR();
@@ -58,6 +60,8 @@ namespace DShop.Services.Signalr
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAllForwardedHeaders();
+            app.UseSwaggerDocs();
             app.UseErrorHandler();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
