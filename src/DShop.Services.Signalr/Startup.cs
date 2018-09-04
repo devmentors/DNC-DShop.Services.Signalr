@@ -51,6 +51,7 @@ namespace DShop.Services.Signalr
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
             builder.Populate(services);
+            builder.AddDispatchers();
             builder.AddRabbitMq();
 
             Container = builder.Build();
