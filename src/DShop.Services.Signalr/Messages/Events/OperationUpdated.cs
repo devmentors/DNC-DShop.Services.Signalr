@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace DDShop.Services.Signalr.Messages.Events
 {
+    [MessageNamespace("operations")]
     public class OperationUpdated : IEvent
     {
         public Guid Id { get; set; }

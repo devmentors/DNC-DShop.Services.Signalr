@@ -3,7 +3,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Consul;
-using DDShop.Services.Signalr.Messages.Events;
+using DShop.Common;
 using DShop.Common.Authentication;
 using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
@@ -12,6 +12,7 @@ using DShop.Common.RabbitMq;
 using DShop.Common.Redis;
 using DShop.Common.Swagger;
 using DShop.Services.Signalr.Hubs;
+using DDShop.Services.Signalr.Messages.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +59,8 @@ namespace DShop.Services.Signalr
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IApplicationLifetime applicationLifetime, IConsulClient client)
+            IApplicationLifetime applicationLifetime, IConsulClient client,
+            IStartupInitializer startupInitializer)
         {
             if (env.IsDevelopment() || env.EnvironmentName == "local")
             {
@@ -77,7 +79,7 @@ namespace DShop.Services.Signalr
             });
             app.UseMvc();
             app.UseRabbitMq()
-                .SubscribeEvent<OperationUpdated>();
+                .SubscribeEvent<OperationUpdated>(@namespace: "operations");
 
             var consulServiceId = app.UseConsul();
             applicationLifetime.ApplicationStopped.Register(() => 
@@ -85,6 +87,8 @@ namespace DShop.Services.Signalr
                 client.Agent.ServiceDeregister(consulServiceId); 
                 Container.Dispose(); 
             });
+
+            startupInitializer.InitializeAsync();
         }
     }
 }
