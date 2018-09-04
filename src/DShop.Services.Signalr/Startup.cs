@@ -9,6 +9,7 @@ using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
 using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
+using DShop.Common.Redis;
 using DShop.Common.Swagger;
 using DShop.Services.Signalr.Hubs;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,7 @@ namespace DShop.Services.Signalr
             services.AddCustomMvc();
             services.AddSwaggerDocs();
             services.AddConsul();
+            services.AddRedis();
             services.AddJwt();
             services.AddSignalR();
             services.AddCors(options =>
@@ -43,11 +45,13 @@ namespace DShop.Services.Signalr
                             .AllowAnyHeader()
                             .AllowCredentials());
             });
+
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
                     .AsImplementedInterfaces();
             builder.Populate(services);
             builder.AddRabbitMq();
+
             Container = builder.Build();
 
             return new AutofacServiceProvider(Container);
@@ -60,6 +64,7 @@ namespace DShop.Services.Signalr
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseAllForwardedHeaders();
             app.UseSwaggerDocs();
             app.UseErrorHandler();
@@ -73,6 +78,7 @@ namespace DShop.Services.Signalr
             app.UseMvc();
             app.UseRabbitMq()
                 .SubscribeEvent<OperationUpdated>();
+
             var consulServiceId = app.UseConsul();
             applicationLifetime.ApplicationStopped.Register(() => 
             { 
