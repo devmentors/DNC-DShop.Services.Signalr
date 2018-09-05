@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using DDShop.Services.Signalr.Messages.Events;
 using DShop.Services.Signalr.Hubs;
+using DShop.Services.Signalr.Messages.Events;
 using Microsoft.AspNetCore.SignalR;
 
 namespace DShop.Services.Signalr.Services
@@ -15,18 +15,40 @@ namespace DShop.Services.Signalr.Services
             _hubContextWrapper = hubContextWrapper;
         }
 
-        public async Task PublishOperationUpdatedAsync(OperationUpdated @event)
+
+
+        public async Task PublishOperationPendingAsync(OperationPending @event)
             => await _hubContextWrapper.PublishToUserAsync(@event.UserId, 
-                "operation_updated",
+                "operation_pending",
                 new
                 {
                     id = @event.Id,
                     name = @event.Name,
-                    state = @event.State,
-                    code = @event.Code,
-                    message = @event.Message,
-                    origin = @event.Origin,
                     resource = @event.Resource
+                }
+            );
+
+        public async Task PublishOperationCompletedAsync(OperationCompleted @event)
+            => await _hubContextWrapper.PublishToUserAsync(@event.UserId, 
+                "operation_completed",
+                new
+                {
+                    id = @event.Id,
+                    name = @event.Name,
+                    resource = @event.Resource
+                }
+            );
+
+        public async Task PublishOperationRejectedAsync(OperationRejected @event)
+            => await _hubContextWrapper.PublishToUserAsync(@event.UserId, 
+                "operation_rejected",
+                new
+                {
+                    id = @event.Id,
+                    name = @event.Name,
+                    resource = @event.Resource,
+                    code = @event.Code,
+                    reason = @event.Message 
                 }
             );
     }

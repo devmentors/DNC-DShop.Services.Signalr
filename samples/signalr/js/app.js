@@ -22,7 +22,15 @@
         console.log('Disconnected, invalid token.');
     });
 
-    connection.on('operation_updated', (message) => {
-        console.log('Operation updated.', message)
+    connection.on('operation_pending', (operation) => {
+        console.log('Operation pending.', operation)
+    });
+
+    connection.on('operation_completed', (operation) => {
+        console.log('Operation completed.', operation)
+    });
+
+    connection.on('operation_rejected', (operation) => {
+        console.log('Operation rejected.', operation)
     });
 })();

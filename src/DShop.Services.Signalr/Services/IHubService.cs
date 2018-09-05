@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
-using DDShop.Services.Signalr.Messages.Events;
+using DShop.Services.Signalr.Messages.Events;
 
 namespace DShop.Services.Signalr.Services
 {
     public interface IHubService
     {
-        Task PublishOperationUpdatedAsync(OperationUpdated @event);
+        Task PublishOperationPendingAsync(OperationPending @event);
+        Task PublishOperationCompletedAsync(OperationCompleted @event);
+        Task PublishOperationRejectedAsync(OperationRejected @event);
     }
 }

@@ -12,11 +12,11 @@ using DShop.Common.RabbitMq;
 using DShop.Common.Redis;
 using DShop.Common.Swagger;
 using DShop.Services.Signalr.Hubs;
-using DDShop.Services.Signalr.Messages.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DShop.Services.Signalr.Messages.Events;
 
 namespace DShop.Services.Signalr
 {
@@ -80,7 +80,9 @@ namespace DShop.Services.Signalr
             });
             app.UseMvc();
             app.UseRabbitMq()
-                .SubscribeEvent<OperationUpdated>(@namespace: "operations");
+                .SubscribeEvent<OperationPending>(@namespace: "operations")
+                .SubscribeEvent<OperationCompleted>(@namespace: "operations")
+                .SubscribeEvent<OperationRejected>(@namespace: "operations");
 
             var consulServiceId = app.UseConsul();
             applicationLifetime.ApplicationStopped.Register(() => 
