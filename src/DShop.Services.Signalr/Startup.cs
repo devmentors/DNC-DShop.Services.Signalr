@@ -7,7 +7,6 @@ using DShop.Common;
 using DShop.Common.Authentication;
 using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
-using DShop.Common.Mvc;
 using DShop.Common.RabbitMq;
 using DShop.Common.Redis;
 using DShop.Common.Swagger;
@@ -17,6 +16,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DShop.Services.Signalr.Messages.Events;
+using StackExchange.Redis;
+using DShop.Common.Mvc;
+using DShop.Services.Signalr.Framework;
 
 namespace DShop.Services.Signalr
 {
@@ -37,7 +39,6 @@ namespace DShop.Services.Signalr
             services.AddConsul();
             services.AddRedis();
             services.AddJwt();
-            services.AddSignalR();
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", cors => 
@@ -46,6 +47,7 @@ namespace DShop.Services.Signalr
                             .AllowAnyHeader()
                             .AllowCredentials());
             });
+            AddSignalR(services);
 
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyTypes(Assembly.GetEntryAssembly())
@@ -59,9 +61,22 @@ namespace DShop.Services.Signalr
             return new AutofacServiceProvider(Container);
         }
 
+        private void AddSignalR(IServiceCollection services)
+        {
+            var signalrOptions = Configuration.GetOptions<SignalrOptions>("signalr");
+            services.AddSingleton(signalrOptions);
+            var signalrBuilder = services.AddSignalR();
+            if (!signalrOptions.Backplane.Equals("redis", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
+            var redisOptions = Configuration.GetOptions<RedisOptions>("redis");
+            signalrBuilder.AddRedis(redisOptions.ConnectionString);
+        }
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IApplicationLifetime applicationLifetime, IConsulClient client,
-            IStartupInitializer startupInitializer)
+            IApplicationLifetime applicationLifetime, SignalrOptions signalrOptions,
+            IConsulClient client, IStartupInitializer startupInitializer)
         {
             if (env.IsDevelopment() || env.EnvironmentName == "local")
             {
@@ -76,7 +91,7 @@ namespace DShop.Services.Signalr
             app.UseServiceId();
             app.UseSignalR(routes =>
             {
-                routes.MapHub<DShopHub>("/dshop");
+                routes.MapHub<DShopHub>($"/{signalrOptions.Hub}");
             });
             app.UseMvc();
             app.UseRabbitMq()
