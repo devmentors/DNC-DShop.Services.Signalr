@@ -1,6 +1,6 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime
 WORKDIR /app
-COPY ./bin/docker .
+COPY ./src/DShop.Services.Signalr/bin/docker .
 ENV ASPNETCORE_URLS http://*:5000
 ENV ASPNETCORE_ENVIRONMENT docker
 EXPOSE 5000
