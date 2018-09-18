@@ -83,11 +83,12 @@ namespace DShop.Services.Signalr
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseAllForwardedHeaders();
             app.UseSwaggerDocs();
             app.UseErrorHandler();
             app.UseAuthentication();
-            app.UseCors("CorsPolicy");
+            app.UseAccessTokenValidator();
             app.UseServiceId();
             app.UseSignalR(routes =>
             {
