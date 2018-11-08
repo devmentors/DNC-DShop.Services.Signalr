@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DShop.Services.Signalr.Messages.Events;
-using StackExchange.Redis;
 using DShop.Common.Mvc;
 using DShop.Services.Signalr.Framework;
 
