@@ -84,6 +84,7 @@ namespace DShop.Services.Signalr
 
             app.UseCors("CorsPolicy");
             app.UseAllForwardedHeaders();
+            app.UseStaticFiles();
             app.UseSwaggerDocs();
             app.UseErrorHandler();
             app.UseAuthentication();
