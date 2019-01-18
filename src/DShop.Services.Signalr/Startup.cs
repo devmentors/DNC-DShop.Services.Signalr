@@ -62,15 +62,15 @@ namespace DShop.Services.Signalr
 
         private void AddSignalR(IServiceCollection services)
         {
-            var signalrOptions = Configuration.GetOptions<SignalrOptions>("signalr");
-            services.AddSingleton(signalrOptions);
-            var signalrBuilder = services.AddSignalR();
-            if (!signalrOptions.Backplane.Equals("redis", StringComparison.InvariantCultureIgnoreCase))
+            var options = Configuration.GetOptions<SignalrOptions>("signalr");
+            services.AddSingleton(options);
+            var builder = services.AddSignalR();
+            if (!options.Backplane.Equals("redis", StringComparison.InvariantCultureIgnoreCase))
             {
                 return;
             }
             var redisOptions = Configuration.GetOptions<RedisOptions>("redis");
-            signalrBuilder.AddRedis(redisOptions.ConnectionString);
+            builder.AddRedis(redisOptions.ConnectionString);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 

@@ -1,10 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using DShop.Common.Authentication;
-using DShop.Services.Signalr.Services;
 using DShop.Services.Signalr.Framework;
 
 namespace DShop.Services.Signalr.Hubs

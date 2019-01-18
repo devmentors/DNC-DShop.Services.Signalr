@@ -1,8 +1,5 @@
-using System;
 using System.Threading.Tasks;
-using DShop.Services.Signalr.Hubs;
 using DShop.Services.Signalr.Messages.Events;
-using Microsoft.AspNetCore.SignalR;
 
 namespace DShop.Services.Signalr.Services
 {
