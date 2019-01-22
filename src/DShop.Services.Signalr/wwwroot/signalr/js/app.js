@@ -1,21 +1,28 @@
 'use strict';
 (function() {
+    const $jwt = document.getElementById("jwt");
+    const $connect = document.getElementById("connect");
     const $messages = document.getElementById("messages");
     const connection = new signalR.HubConnectionBuilder()
         .withUrl('http://localhost:5007/dshop')
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
-    const jwt = 'token';
+    $connect.onclick = function() {
+        const jwt = $jwt.value;
+        if (!jwt || /\s/g.test(jwt)){
+            alert('Invalid JWT.')
+            return;
+        }
+
+        appendMessage("Connecting to DShop Hub...");
+        connection.start()
+            .then(() => {
+            connection.invoke('initializeAsync', $jwt.value);
+        })
+        .catch(err => appendMessage(err));
+    }
     
-    appendMessage("Connecting to DShop Hub...");
-
-    connection.start()
-      .then(() => {
-        connection.invoke('initializeAsync', jwt);
-      })
-      .catch(err => appendMessage(err));
-
     connection.on('connected', _ => {
         appendMessage("Connected.", "primary");
     });
