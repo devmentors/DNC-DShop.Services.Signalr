@@ -7,6 +7,7 @@ using DShop.Common;
 using DShop.Common.Authentication;
 using DShop.Common.Consul;
 using DShop.Common.Dispatchers;
+using DShop.Common.Jaeger;
 using DShop.Common.RabbitMq;
 using DShop.Common.Redis;
 using DShop.Common.Swagger;
@@ -36,6 +37,8 @@ namespace DShop.Services.Signalr
             services.AddCustomMvc();
             services.AddSwaggerDocs();
             services.AddConsul();
+            services.AddJaeger();
+            services.AddOpenTracing();
             services.AddRedis();
             services.AddJwt();
             services.AddCors(options =>
